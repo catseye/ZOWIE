@@ -1,0 +1,7 @@
+; Unix 'cat' in ZOWIE
+; This example source is in the public domain.
+
+MOV R1, R1    ; BEGIN TRANSACTION
+MOV R10, R0   ; INPUT to R10
+MOV R0, R10   ; OUTPUT R10
+MOV R3, R10   ; COMMIT AND REPEAT if non-zero

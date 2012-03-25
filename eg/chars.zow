@@ -1,0 +1,12 @@
+; Display the Roman alphabet in reverse, in ZOWIE
+; This example source is in the public domain.
+
+MOV R10, 90   ; initially it's "Z"
+MOV R1, R1    ; BEGIN TRANSACTION for "REPEAT"
+MOV R0, R10   ; output character
+MOV R8, R10   ; decrement character
+MOV R5, 1
+MOV R10, R8
+MOV R8, R10   ; test if character is above "@"
+MOV R5, 64
+MOV R3, R8    ; COMMIT AND REPEAT if non-zero

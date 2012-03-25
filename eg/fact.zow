@@ -1,0 +1,29 @@
+; Compute a factorial, in ZOWIE
+; This example source is in the public domain.
+
+; Expected output is MODIFIER LETTER TRIANGULAR COLON (Unicode character 720).
+; NOTE: this code is also able to properly compute 0! = 1.
+
+MOV R11, 6    ; let's find 6!
+MOV R10, 1    ; accumulator
+
+MOV R8, R11   ; increase multiplicand
+MOV R4, 1
+MOV R11, R8
+
+MOV R1, R1    ; BEGIN TRANSACTION for "REPEAT"
+
+MOV R8, R11   ; decrease multiplicand
+MOV R5, 1
+MOV R11, R8
+
+MOV R1, R1    ; BEGIN TRANSACTION for "IF"
+
+MOV R8, R10   ; accumulator
+MOV R6, R11   ; multiplied
+MOV R10, R8
+
+MOV R2, R11   ; COMMIT if multiplicand above zero, or ROLLBACK otherwise
+MOV R3, R11   ; COMMIT AND REPEAT if multiplicand above zero
+
+MOV R0, R10   ; output accumulator (as single Unicode character)

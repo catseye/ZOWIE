@@ -1,0 +1,17 @@
+; Hello, world! in ZOWIE
+; This example source is in the public domain.
+
+MOV R0, 72
+MOV R0, 101
+MOV R0, 108
+MOV R0, 108
+MOV R0, 111
+MOV R0, 44
+MOV R0, 32
+MOV R0, 119
+MOV R0, 111
+MOV R0, 114
+MOV R0, 108
+MOV R0, 100
+MOV R0, 33
+MOV R0, 10
