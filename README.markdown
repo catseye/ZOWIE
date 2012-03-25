@@ -4,7 +4,7 @@ ZOWIE
 Introduction
 ------------
 
-ZOWIE is a programming language where all flow-control is both
+ZOWIE is a programming language where all control flow is both
 *memory-mapped* and *structured*. It is memory-mapped in the sense that
 changes in flow are triggered by changes made to memory locations, and
 it is structured in the sense of structured programming – the programmer
@@ -14,7 +14,7 @@ History
 -------
 
 The primary design goal of ZOWIE was to have memory-mapped structured
-flow control. This goal was inspired by Jeffry Johnston's unsuccessful
+control flow. This goal was inspired by Jeffry Johnston's unsuccessful
 attempt to reduce the number of instructions in
 [BitChanger](http://esolangs.org/wiki/BitChanger) (while retaining
 Turing-completeness) by memory-mapping the loop operation.
@@ -68,7 +68,7 @@ language. We'll see below that ZOWIE manages to create generalized loops
 through the use of transactions.
 
 The secondary design goal of ZOWIE was to strike the perfect balance
-between It's a Mad Mad Mad Mad World and The Party. It is generally
+between _It's a Mad Mad Mad Mad World_ and _The Party_. It is generally
 considered a morbid failure in that regard, what with not being a madcap
 60's movie and all.
 
@@ -264,7 +264,7 @@ Three things to note:
 
 That's all.
 
-Happy *«deleted by black helicopters»*! \
-Chris Pressey \
-December 29^th^, 2009 CE \
+Happy *«deleted by black helicopters»*!  
+Chris Pressey  
+December 29^th^, 2009 CE  
 Evanston, IL
