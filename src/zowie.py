@@ -10,6 +10,7 @@
 import re
 import sys
 
+
 class MappedRegister:  # abstract
     def read(self):
         raise NotImplementedError
@@ -176,7 +177,8 @@ class Instruction:
         if m is not None:
             return False
 
-        m = re.match(r'^\s*MOV\s+R(\d+)\s*,\s*(\d+)\s*(\;.*)?$', line, re.IGNORECASE)
+        m = re.match(r'^\s*MOV\s+R(\d+)\s*,\s*(\d+)\s*(\;.*)?$',
+                     line, re.IGNORECASE)
         if m is not None:
             self.source_is_immediate = True
             (dest_reg, src_imm) = m.group(1, 2)
@@ -187,7 +189,8 @@ class Instruction:
         # We actually implement a syntactic superset of ZOWIE here -- the
         # closing bracket is just sugar which may be omitted or included
         # without changing the meaning (only the opening bracket counts!)
-        m = re.match(r'^\s*MOV\s+R(\[R)?(\d+)\]?\s*,\s*R(\[R)?(\d+)\]?\s*(\;.*)?$', line, re.IGNORECASE)
+        m = re.match(r'^\s*MOV\s+R(\[R)?(\d+)\]?\s*,\s*R(\[R)?(\d+)\]?'
+                      '\s*(\;.*)?$', line, re.IGNORECASE)
         if m is not None:
             (dest_ind, dest_reg, src_ind, src_reg) = m.group(1, 2, 3, 4)
             if dest_ind == '[R':
@@ -226,7 +229,8 @@ class Instruction:
             src_fmt = "R[R%d]"
         if self.source_is_immediate:
             src_fmt = "%d"
-        return "MOV %s, %s" % (dest_fmt % self.destination_register, src_fmt % self.source_register)
+        return "MOV %s, %s" % (dest_fmt % self.destination_register,
+                               src_fmt % self.source_register)
 
 
 class Processor:
@@ -234,7 +238,7 @@ class Processor:
         self.program = []
         self.state = MachineState(self)
         self.states = []
-    
+
     def __str__(self):
         s = ""
         for i in self.program:
@@ -242,7 +246,7 @@ class Processor:
         return s
 
     def load(self, filename):
-        file = open(filename,'r')
+        file = open(filename, 'r')
         for line in file:
             i = Instruction()
             if i.parse(line):
@@ -280,7 +284,7 @@ class Processor:
         self.state.pc = discard.pc - 1
 
 
-def main(argv): 
+def main(argv):
     p = Processor()
     for filename in argv[1:]:
         p.load(filename)
