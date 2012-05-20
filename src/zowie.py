@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # zowie.py -- Interpreter for the ZOWIE language
 # Chris Pressey, Cat's Eye Technologies, Oct 6 2009
