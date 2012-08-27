@@ -266,5 +266,5 @@ That's all.
 
 Happy *«deleted by black helicopters»*!  
 Chris Pressey  
-December 29^th^, 2009 CE  
+December 29th, 2009 CE  
 Evanston, IL
