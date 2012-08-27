@@ -190,7 +190,7 @@ class Instruction:
         # closing bracket is just sugar which may be omitted or included
         # without changing the meaning (only the opening bracket counts!)
         m = re.match(r'^\s*MOV\s+R(\[R)?(\d+)\]?\s*,\s*R(\[R)?(\d+)\]?'
-                      '\s*(\;.*)?$', line, re.IGNORECASE)
+                     r'\s*(\;.*)?$', line, re.IGNORECASE)
         if m is not None:
             (dest_ind, dest_reg, src_ind, src_reg) = m.group(1, 2, 3, 4)
             if dest_ind == '[R':
