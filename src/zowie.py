@@ -11,6 +11,35 @@ import re
 import sys
 
 
+# check if running under Skulpt, and if so, apply appropriate modifications
+if getattr(sys, 'resetTimeout', None) is not None:
+    __name__ = '__skulpt__'
+    class EOFError:
+        pass
+    class SyntaxError:
+        pass
+    class UnicodeEncodeError:
+        pass
+    def output(code):
+        if code > 126:
+            print "&#%d;" % code
+        else:
+            print chr(code)
+else:
+    def output(code):
+        try:
+            sys.stdout.write(unichr(code))
+        except UnicodeEncodeError:
+            sys.stdout.write("&#%d;" % code)
+
+
+def copy_dict(d):
+    e = {}
+    for key in d:
+        e[key] = d[key]
+    return e
+
+
 class MappedRegister:  # abstract
     def read(self):
         raise NotImplementedError
@@ -35,10 +64,7 @@ class TtyRegister(MappedRegister):
         return x
 
     def write(self, payload):
-        try:
-            sys.stdout.write(unichr(payload))
-        except UnicodeEncodeError:
-            sys.stdout.write("&#%d;" % payload)
+        output(payload)
 
 
 class BeginTransactionRegister(MappedRegister):
@@ -148,7 +174,7 @@ class MachineState:
     def clone(self):
         other = MachineState(self.cpu)
         other.pc = self.pc
-        other.storage_register = self.storage_register.copy()
+        other.storage_register = copy_dict(self.storage_register)
         return other
 
     def __getitem__(self, key):
@@ -181,7 +207,8 @@ class Instruction:
                      line, re.IGNORECASE)
         if m is not None:
             self.source_is_immediate = True
-            (dest_reg, src_imm) = m.group(1, 2)
+            dest_reg = m.group(1)
+            src_imm = m.group(2)
             self.destination_register = long(dest_reg)
             self.source_register = long(src_imm)
             return True
@@ -192,7 +219,10 @@ class Instruction:
         m = re.match(r'^\s*MOV\s+R(\[R)?(\d+)\]?\s*,\s*R(\[R)?(\d+)\]?'
                      r'\s*(\;.*)?$', line, re.IGNORECASE)
         if m is not None:
-            (dest_ind, dest_reg, src_ind, src_reg) = m.group(1, 2, 3, 4)
+            dest_ind = m.group(1)
+            dest_reg = m.group(2)
+            src_ind = m.group(3)
+            src_reg = m.group(4)
             if dest_ind == '[R':
                 self.destination_is_indirect = True
             self.destination_register = long(dest_reg)
@@ -248,6 +278,12 @@ class Processor:
     def load(self, filename):
         file = open(filename, 'r')
         for line in file:
+            i = Instruction()
+            if i.parse(line):
+                self.program.append(i)
+
+    def load_string(self, text):
+        for line in text.split("\n"):
             i = Instruction()
             if i.parse(line):
                 self.program.append(i)
