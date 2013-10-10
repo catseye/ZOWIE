@@ -24,10 +24,7 @@ if getattr(sys, 'resetTimeout', None) is not None:
         pass
 
     def output(code):
-        if code > 126:
-            print "&#%d;" % code
-        else:
-            print chr(code)
+        print "&#%d;" % code
 else:
     def output(code):
         try:
