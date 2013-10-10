@@ -2,9 +2,8 @@
 #
 # zowie.py -- Interpreter for the ZOWIE language
 # Chris Pressey, Cat's Eye Technologies, Oct 6 2009
+# Adapted to run under Skulpt Oct 10 2013
 # This source code is in the public domain.
-#
-# $Id: zowie.py 298 2009-12-29 17:47:45Z cpressey $
 #
 
 import re
@@ -14,12 +13,16 @@ import sys
 # check if running under Skulpt, and if so, apply appropriate modifications
 if getattr(sys, 'resetTimeout', None) is not None:
     __name__ = '__skulpt__'
+
     class EOFError:
         pass
+
     class SyntaxError:
         pass
+
     class UnicodeEncodeError:
         pass
+
     def output(code):
         if code > 126:
             print "&#%d;" % code

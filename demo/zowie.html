@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<!-- adapted from https://gist.github.com/bnmnetp/4650616 -->
+<head>
+  <meta charset="utf-8">
+  <script src="http://catseye.tc/contrib/skulpt/skulpt.min.js" type="text/javascript"></script>
+  <script src="http://catseye.tc/contrib/skulpt/skulpt-stdlib.js" type="text/javascript"></script>
+  <script type="text/javascript"> 
+  function outf(text) { 
+      var mypre = document.getElementById("output");
+      mypre.innerHTML = mypre.innerHTML + text.replace(/\n$/, "");
+  }
+  function builtinRead(x) {
+      if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
+          throw "File not found: '" + x + "'";
+      }
+      return Sk.builtinFiles["files"][x];
+  }
+  function runit() { 
+     var pyprog = document.getElementById("yourcode").value; 
+     var esoprog = document.getElementById("esocode").value; 
+     var mypre = document.getElementById("output"); 
+     mypre.innerHTML = ''; 
+     Sk.canvas = "mycanvas";
+     Sk.pre = "output";
+     Sk.configure({output: outf, read: builtinRead});
+     prog = pyprog + "\n";
+     prog += 'p = Processor()\n';
+     prog += 'p.load_string("""\n';
+     prog += esoprog;
+     prog += '""")\n';
+     prog += 'p.run()\n';
+     eval(Sk.importMainWithBody("<stdin>", false, prog));
+  }
+  </script> 
+</head>
+
+<body>
+  <h1>ZOWIE</h1>
+
+<textarea id="yourcode" cols="80" rows="10">
+# paste zowie.py here
+</textarea><br/>
+
+<textarea id="esocode" cols="80" rows="10">
+; Display the Roman alphabet in reverse, in ZOWIE
+; This example source is in the public domain.
+
+MOV R10, 90   ; initially it's "Z"
+MOV R1, R1    ; BEGIN TRANSACTION for "REPEAT"
+MOV R0, R10   ; output character
+MOV R8, R10   ; decrement character
+MOV R5, 1
+MOV R10, R8
+MOV R8, R10   ; test if character is above "@"
+MOV R5, 64
+MOV R3, R8    ; COMMIT AND REPEAT if non-zero
+</textarea><br/>
+  
+  <button type="button" onclick="runit()">Run</button>
+
+  <pre style="border: 1px solid blue" id="output"></pre>
+</body>
+
+</html>
