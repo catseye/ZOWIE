@@ -1,3 +1,3 @@
 #!/bin/sh
 
-falderal tests/ZOWIE.markdown
+falderal --substring-error tests/ZOWIE.markdown

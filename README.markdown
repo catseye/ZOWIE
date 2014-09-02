@@ -85,7 +85,8 @@ be 0.
 There are five instruction forms. The first register is the destination
 register, and is written to; the second register (or immediate value) is
 read from. As in SMITH, square brackets indicate indirect register
-access.
+access. All instruction forms are case-sensitive; they must be given
+using capital letters.
 
       MOV register, immediate       e.g.  MOV R8, 141
       MOV register, register              MOV R8, R9

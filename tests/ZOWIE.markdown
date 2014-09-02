@@ -46,3 +46,16 @@ Compute a factorial.
     | 
     | MOV R0, R10   ; output accumulator (as single Unicode character)
     = x
+
+The only command in the language is `MOV` and it must be in uppercase.
+
+    | cmp R11, 5
+    ? 
+
+    | mov R11, 5
+    ? 
+
+Register names must be uppercase, too.
+
+    | MOV r11, 5
+    ? 

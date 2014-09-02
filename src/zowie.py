@@ -199,12 +199,16 @@ class Instruction:
         self.destination_is_indirect = False
 
     def parse(self, line):
-        m = re.match(r'^\s*(\;.*)?$', line, re.IGNORECASE)
-        if m is not None:
+        line = line.strip()
+        if not line or line[0] == ';':
             return False
 
-        m = re.match(r'^\s*MOV\s+R(\d+)\s*,\s*(\d+)\s*(\;.*)?$',
-                     line, re.IGNORECASE)
+        if len(line) < 3 or line[0:3] != 'MOV':
+            raise SyntaxError("Could not parse line '%s'" % line)
+
+        line = line[3:].strip()
+
+        m = re.match(r'^R(\d+)\s*,\s*(\d+)\s*(\;.*)?$', line)
         if m is not None:
             self.source_is_immediate = True
             dest_reg = m.group(1)
@@ -216,8 +220,8 @@ class Instruction:
         # We actually implement a syntactic superset of ZOWIE here -- the
         # closing bracket is just sugar which may be omitted or included
         # without changing the meaning (only the opening bracket counts!)
-        m = re.match(r'^\s*MOV\s+R(\[R)?(\d+)\]?\s*,\s*R(\[R)?(\d+)\]?'
-                     r'\s*(\;.*)?$', line, re.IGNORECASE)
+        m = re.match(r'^R(\[R)?(\d+)\]?\s*,\s*R(\[R)?(\d+)\]?'
+                     r'\s*(\;.*)?$', line)
         if m is not None:
             dest_ind = m.group(1)
             dest_reg = m.group(2)
@@ -276,11 +280,12 @@ class Processor:
         return s
 
     def load(self, filename):
-        file = open(filename, 'r')
-        for line in file:
+        f = open(filename, 'r')
+        for line in f:
             i = Instruction()
             if i.parse(line):
                 self.program.append(i)
+        f.close()
 
     def load_string(self, text):
         for line in text.split("\n"):
@@ -325,6 +330,29 @@ def main(argv):
     for filename in argv[1:]:
         p.load(filename)
         p.run()
+
+
+def rpython_main(argv):
+    # EXPERIMENTAL!
+    print "hi there"
+    p = Processor()
+    p.load_string("""
+MOV R10, 90   ; initially it's "Z"
+MOV R1, R1    ; BEGIN TRANSACTION for "REPEAT"
+MOV R0, R10   ; output character
+MOV R8, R10   ; decrement character
+MOV R5, 1
+MOV R10, R8
+MOV R8, R10   ; test if character is above "@"
+MOV R5, 64
+MOV R3, R8    ; COMMIT AND REPEAT if non-zero
+""")
+    p.run()
+    return 0
+
+
+def target(*args):
+    return rpython_main, None
 
 
 if __name__ == "__main__":
