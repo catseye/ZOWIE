@@ -40,7 +40,7 @@ def copy_dict(d):
     return e
 
 
-class MappedRegister:  # abstract
+class MappedRegister(object):  # abstract
     def read(self):
         raise NotImplementedError
 
@@ -156,7 +156,7 @@ class NegationRegister(MappedRegister):
             self.state[8] = 0
 
 
-class MachineState:
+class MachineState(object):
     def __init__(self, cpu):
         self.cpu = cpu
         self.pc = 0
@@ -190,7 +190,7 @@ class MachineState:
         self.storage_register[key] = value
 
 
-class Instruction:
+class Instruction(object):
     def __init__(self):
         self.source_register = 0
         self.destination_register = 0
@@ -203,7 +203,7 @@ class Instruction:
         if not line or line[0] == ';':
             return False
 
-        if len(line) < 3 or line[0:3] != 'MOV':
+        if len(line) < 3 or not line.startswith('MOV'):
             raise SyntaxError("Could not parse line '%s'" % line)
 
         line = line[3:].strip()
@@ -267,7 +267,7 @@ class Instruction:
                                src_fmt % self.source_register)
 
 
-class Processor:
+class Processor(object):
     def __init__(self):
         self.program = []
         self.state = MachineState(self)
