@@ -6,7 +6,6 @@
 # This source code is in the public domain.
 #
 
-import re
 import sys
 
 
@@ -191,7 +190,8 @@ class MachineState(object):
 
 
 class Reference(object):  # abstract
-    pass
+    def get_register_number(self):
+        raise NotImplementedError
 
 
 class ImmediateReference(Reference):
@@ -203,10 +203,17 @@ class DirectRegisterReference(Reference):
     def __init__(self, number):
         self.number = number
 
+    def get_register_number(self):
+        return self.number
+
 
 class IndirectRegisterReference(Reference):
-    def __init__(self, regref):
-        self.regref = regref
+    def __init__(self, ref):
+        assert isinstance(ref, Reference)
+        self.ref = ref
+
+    def get_register_number(self):
+        return self.ref.get_register_number()
 
 
 class Scanner(object):
@@ -225,6 +232,7 @@ class Scanner(object):
         while self.line and self.line[0].isdigit():
             number = number * 10 + (ord(self.line[0]) - ord('0'))
             self.line = self.line[1:]
+        self.line = self.line.lstrip()
         return number
 
     def scan_reference(self):
@@ -260,36 +268,32 @@ class Instruction(object):
         scanner.expect('MOV')
         line = scanner.line
 
-        # lhs = scanner.scan_reference()
+        dest = scanner.scan_reference()
+        scanner.expect(',')
+        source = scanner.scan_reference()
 
-        m = re.match(r'^R(\d+)\s*,\s*(\d+)\s*(\;.*)?$', line)
-        if m is not None:
+        if scanner.line and scanner.line[0] != ';':
+            raise SyntaxError("Expected EOL or comment")
+
+        assert not isinstance(dest, ImmediateReference)
+
+        if isinstance(source, ImmediateReference):
+            assert isinstance(dest, DirectRegisterReference)
+
             self.source_is_immediate = True
-            dest_reg = m.group(1)
-            src_imm = m.group(2)
-            self.destination_register = long(dest_reg)
-            self.source_register = long(src_imm)
+            self.destination_register = dest.get_register_number()
+            self.source_register = source.number
             return True
 
-        # We actually implement a syntactic superset of ZOWIE here -- the
-        # closing bracket is just sugar which may be omitted or included
-        # without changing the meaning (only the opening bracket counts!)
-        m = re.match(r'^R(\[R)?(\d+)\]?\s*,\s*R(\[R)?(\d+)\]?'
-                     r'\s*(\;.*)?$', line)
-        if m is not None:
-            dest_ind = m.group(1)
-            dest_reg = m.group(2)
-            src_ind = m.group(3)
-            src_reg = m.group(4)
-            if dest_ind == '[R':
-                self.destination_is_indirect = True
-            self.destination_register = long(dest_reg)
-            if src_ind == '[R':
-                self.source_is_indirect = True
-            self.source_register = long(src_reg)
-            return True
-
-        raise SyntaxError("Could not parse line '%s'" % line)
+        if isinstance(dest, IndirectRegisterReference):
+            self.destination_is_indirect = True
+        self.destination_register = dest.get_register_number()
+        
+        if isinstance(source, IndirectRegisterReference):
+            self.source_is_indirect = True
+        self.source_register = source.get_register_number()
+        
+        return True
 
     def apply(self, state):
         if self.source_is_indirect:
