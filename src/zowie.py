@@ -190,30 +190,57 @@ class MachineState(object):
         self.storage_register[key] = value
 
 
+class Reference(object):  # abstract
+    pass
+
+
+class ImmediateReference(Reference):
+    def __init__(self, number):
+        self.number = number
+
+
+class DirectRegisterReference(Reference):
+    def __init__(self, number):
+        self.number = number
+
+
+class IndirectRegisterReference(Reference):
+    def __init__(self, regref):
+        self.regref = regref
+
+
 class Scanner(object):
     def __init__(self, line):
         self.line = line
+
+    def expect(self, s):
+        if not self.line or not self.line.startswith(s):
+            raise SyntaxError("Expected '%s'" % s)
+        self.line = self.line[len(s):].lstrip()
 
     def scan_integer(self):
         number = 0
         if not self.line or not self.line[0].isdigit():
             raise SyntaxError('Expected integer')
         while self.line and self.line[0].isdigit():
-            number = number * 10 + (ord(line[0]) - ord('0'))
+            number = number * 10 + (ord(self.line[0]) - ord('0'))
             self.line = self.line[1:]
         return number
 
-    def scan_register(self):
-        if not self.line or self.line[0] != 'R':
-            raise SyntaxError('Expected R')
-        self.line = self.line[1:]
-        if not self.line:
-            raise SyntaxError('Expected register designator')
-        if self.line[0] == '[':
-            pass  # ...
+    def scan_reference(self):
+        if self.line[0] == 'R':
+            self.line = self.line[1:]
+            if self.line[0] == '[':
+                self.line = self.line[1:]
+                inner = self.scan_register()
+                self.expect(']')
+                return IndirectRegisterReference(inner)
+            else:
+                regnum = self.scan_integer()
+                return DirectRegisterReference(regnum)
         else:
-            regnum = self.scan_integer()
-            return ('direct', regnum)
+            imm = self.scan_integer()
+            return ImmediateReference(imm)
 
 
 class Instruction(object):
@@ -229,10 +256,11 @@ class Instruction(object):
         if not line or line[0] == ';':
             return False
 
-        if len(line) < 3 or not line.startswith('MOV'):
-            raise SyntaxError("Could not parse line '%s'" % line)
+        scanner = Scanner(line)
+        scanner.expect('MOV')
+        line = scanner.line
 
-        line = line[3:].strip()
+        # lhs = scanner.scan_reference()
 
         m = re.match(r'^R(\d+)\s*,\s*(\d+)\s*(\;.*)?$', line)
         if m is not None:
