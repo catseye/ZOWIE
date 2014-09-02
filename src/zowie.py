@@ -381,10 +381,15 @@ def main(argv):
 
 
 def rpython_input():
-    return 0
+    import os
+    s = os.read(1, 1)
+    if not s:
+        return 0
+    return ord(s)
 
 def rpython_output(code):
-    print "&#%d;" % code
+    import os
+    os.write(0, unichr(code).encode('utf-8'))
 
 
 def rpython_main(argv):
