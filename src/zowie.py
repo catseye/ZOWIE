@@ -190,6 +190,32 @@ class MachineState(object):
         self.storage_register[key] = value
 
 
+class Scanner(object):
+    def __init__(self, line):
+        self.line = line
+
+    def scan_integer(self):
+        number = 0
+        if not self.line or not self.line[0].isdigit():
+            raise SyntaxError('Expected integer')
+        while self.line and self.line[0].isdigit():
+            number = number * 10 + (ord(line[0]) - ord('0'))
+            self.line = self.line[1:]
+        return number
+
+    def scan_register(self):
+        if not self.line or self.line[0] != 'R':
+            raise SyntaxError('Expected R')
+        self.line = self.line[1:]
+        if not self.line:
+            raise SyntaxError('Expected register designator')
+        if self.line[0] == '[':
+            pass  # ...
+        else:
+            regnum = self.scan_integer()
+            return ('direct', regnum)
+
+
 class Instruction(object):
     def __init__(self):
         self.source_register = 0
