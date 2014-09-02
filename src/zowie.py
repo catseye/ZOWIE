@@ -9,6 +9,25 @@
 import sys
 
 
+def input():
+    try:
+        c = sys.stdin.read(1)
+        if len(c) == 0:
+            x = 0
+        else:
+            x = ord(c)
+    except EOFError:
+        x = 0
+    return x
+
+
+def output(code):
+    try:
+        sys.stdout.write(unichr(code))
+    except UnicodeEncodeError:
+        sys.stdout.write("&#%d;" % code)
+
+
 # check if running under Skulpt, and if so, apply appropriate modifications
 if getattr(sys, 'resetTimeout', None) is not None:
     __name__ = '__skulpt__'
@@ -22,14 +41,10 @@ if getattr(sys, 'resetTimeout', None) is not None:
     class UnicodeEncodeError:
         pass
 
-    def output(code):
+    def skulpt_output(code):
         print "&#%d;" % code
-else:
-    def output(code):
-        try:
-            sys.stdout.write(unichr(code))
-        except UnicodeEncodeError:
-            sys.stdout.write("&#%d;" % code)
+
+    output = skulpt_output
 
 
 def copy_dict(d):
@@ -52,15 +67,7 @@ class TtyRegister(MappedRegister):
         pass
 
     def read(self):
-        try:
-            c = sys.stdin.read(1)
-            if len(c) == 0:
-                x = 0
-            else:
-                x = ord(c)
-        except EOFError:
-            x = 0
-        return x
+        return input()
 
     def write(self, payload):
         output(payload)
@@ -113,7 +120,7 @@ class AdditionRegister(MappedRegister):
         return 4
 
     def write(self, payload):
-        self.state[8] = self.state[8] + payload
+        self.state.__setitem__(8, self.state.__getitem__(8) + payload)
 
 
 class SubtractionRegister(MappedRegister):
@@ -124,10 +131,10 @@ class SubtractionRegister(MappedRegister):
         return 5
 
     def write(self, payload):
-        result = self.state[8] - payload
+        result = self.state.__getitem__(8) - payload
         if result < 0:
             result = 0
-        self.state[8] = result
+        self.state.__setitem__(8, result)
 
 
 class MultiplicationRegister(MappedRegister):
@@ -138,7 +145,7 @@ class MultiplicationRegister(MappedRegister):
         return 6
 
     def write(self, payload):
-        self.state[8] = self.state[8] * payload
+        self.state.__setitem__(8, self.state.__getitem__(8) * payload)
 
 
 class NegationRegister(MappedRegister):
@@ -150,9 +157,9 @@ class NegationRegister(MappedRegister):
 
     def write(self, payload):
         if payload == 0:
-            self.state[8] = 1
+            self.state.__setitem__(8, 1)
         else:
-            self.state[8] = 0
+            self.state.__setitem__(8, 0)
 
 
 class MachineState(object):
@@ -177,6 +184,7 @@ class MachineState(object):
         return other
 
     def __getitem__(self, key):
+        assert isinstance(key, int)
         if key in self.mmap_register:
             return self.mmap_register[key].read()
         if key not in self.storage_register:
@@ -184,6 +192,8 @@ class MachineState(object):
         return self.storage_register[key]
 
     def __setitem__(self, key, value):
+        assert isinstance(key, int)
+        assert isinstance(value, int)
         if key in self.mmap_register:
             self.mmap_register[key].write(value)
         self.storage_register[key] = value
@@ -213,10 +223,10 @@ class DirectRegisterReference(Reference):
         self.index = index
 
     def get_value(self, state):
-        return state[self.index]
+        return state.__getitem__(self.index)
 
     def set_value(self, state, value):
-        state[self.index] = value
+        state.__setitem__(self.index, value)
 
     def __str__(self):
         return "R%d" % self.number
@@ -228,10 +238,10 @@ class IndirectRegisterReference(Reference):
         self.ref = ref
 
     def get_value(self, state):
-        return state[self.ref.get_value(state)]
+        return state.__getitem__(self.ref.get_value(state))
 
     def set_value(self, state, value):
-        state[self.ref.get_value(state)] = value
+        state.__setitem__(self.ref.get_value(state), value)
 
     def __str__(self):
         return "R[%s]" % self.ref
@@ -370,6 +380,13 @@ def main(argv):
         p.run()
 
 
+def rpython_input():
+    return 0
+
+def rpython_output(code):
+    print "&#%d;" % code
+
+
 def rpython_main(argv):
     # EXPERIMENTAL!
     print "hi there"
@@ -390,6 +407,9 @@ MOV R3, R8    ; COMMIT AND REPEAT if non-zero
 
 
 def target(*args):
+    global input, output
+    input = rpython_input
+    output = rpython_output
     return rpython_main, None
 
 

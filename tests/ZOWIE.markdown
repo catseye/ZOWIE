@@ -65,4 +65,16 @@ The destination cannot be an immediate.
     | MOV 5, R11
     ? 
 
-TODO need tests for indirect references here.
+Retrieve indirect reference.
+
+    | MOV R11, 65
+    | MOV R12, 11
+    | MOV R0, R[R12]
+    = A
+
+Store indirect reference.
+
+    | MOV R12, 11
+    | MOV R[R12], 65
+    | MOV R0, R11
+    = A
