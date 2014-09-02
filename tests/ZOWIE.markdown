@@ -59,3 +59,10 @@ Register names must be uppercase, too.
 
     | MOV r11, 5
     ? 
+
+The destination cannot be an immediate.
+
+    | MOV 5, R11
+    ? 
+
+TODO need tests for indirect references here.

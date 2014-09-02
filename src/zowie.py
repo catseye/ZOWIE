@@ -190,21 +190,36 @@ class MachineState(object):
 
 
 class Reference(object):  # abstract
-    def get_register_number(self):
+    def get_value(self, state):
+        raise NotImplementedError
+
+    def set_value(self, state, value):
         raise NotImplementedError
 
 
 class ImmediateReference(Reference):
-    def __init__(self, number):
-        self.number = number
+    def __init__(self, value):
+        self.value = value
+
+    def get_value(self, state):
+        return self.value
+
+    def __str__(self):
+        return str(self.number)
 
 
 class DirectRegisterReference(Reference):
-    def __init__(self, number):
-        self.number = number
+    def __init__(self, index):
+        self.index = index
 
-    def get_register_number(self):
-        return self.number
+    def get_value(self, state):
+        return state[self.index]
+
+    def set_value(self, state, value):
+        state[self.index] = value
+
+    def __str__(self):
+        return "R%d" % self.number
 
 
 class IndirectRegisterReference(Reference):
@@ -212,8 +227,14 @@ class IndirectRegisterReference(Reference):
         assert isinstance(ref, Reference)
         self.ref = ref
 
-    def get_register_number(self):
-        return self.ref.get_register_number()
+    def get_value(self, state):
+        return state[self.ref.get_value(state)]
+
+    def set_value(self, state, value):
+        state[self.ref.get_value(state)] = value
+
+    def __str__(self):
+        return "R[%s]" % self.ref
 
 
 class Scanner(object):
@@ -240,7 +261,7 @@ class Scanner(object):
             self.line = self.line[1:]
             if self.line[0] == '[':
                 self.line = self.line[1:]
-                inner = self.scan_register()
+                inner = self.scan_reference()
                 self.expect(']')
                 return IndirectRegisterReference(inner)
             else:
@@ -253,11 +274,8 @@ class Scanner(object):
 
 class Instruction(object):
     def __init__(self):
-        self.source_register = 0
-        self.destination_register = 0
-        self.source_is_immediate = False
-        self.source_is_indirect = False
-        self.destination_is_indirect = False
+        self.source_register = None
+        self.destination_register = None
 
     def parse(self, line):
         line = line.strip()
@@ -266,63 +284,25 @@ class Instruction(object):
 
         scanner = Scanner(line)
         scanner.expect('MOV')
-        line = scanner.line
 
-        dest = scanner.scan_reference()
+        self.destination_register = scanner.scan_reference()
+
+        assert not isinstance(self.destination_register, ImmediateReference)
+
         scanner.expect(',')
-        source = scanner.scan_reference()
+        self.source_register = scanner.scan_reference()
 
         if scanner.line and scanner.line[0] != ';':
             raise SyntaxError("Expected EOL or comment")
-
-        assert not isinstance(dest, ImmediateReference)
-
-        if isinstance(source, ImmediateReference):
-            assert isinstance(dest, DirectRegisterReference)
-
-            self.source_is_immediate = True
-            self.destination_register = dest.get_register_number()
-            self.source_register = source.number
-            return True
-
-        if isinstance(dest, IndirectRegisterReference):
-            self.destination_is_indirect = True
-        self.destination_register = dest.get_register_number()
-        
-        if isinstance(source, IndirectRegisterReference):
-            self.source_is_indirect = True
-        self.source_register = source.get_register_number()
         
         return True
 
     def apply(self, state):
-        if self.source_is_indirect:
-            source_register = state[self.source_register]
-        else:
-            source_register = self.source_register
-
-        if self.source_is_immediate:
-            contents = source_register
-        else:
-            contents = state[source_register]
-
-        if self.destination_is_indirect:
-            destination_register = state[self.destination_register]
-        else:
-            destination_register = self.destination_register
-        state[destination_register] = contents
+        value = self.source_register.get_value(state)
+        self.destination_register.set_value(state, value)
 
     def __str__(self):
-        dest_fmt = "R%d"
-        if self.destination_is_indirect:
-            dest_fmt = "R[R%d]"
-        src_fmt = "R%d"
-        if self.source_is_indirect:
-            src_fmt = "R[R%d]"
-        if self.source_is_immediate:
-            src_fmt = "%d"
-        return "MOV %s, %s" % (dest_fmt % self.destination_register,
-                               src_fmt % self.source_register)
+        return "MOV %s, %s" % (self.destination_register, self.source_register)
 
 
 class Processor(object):
