@@ -7,6 +7,10 @@ Tests for ZOWIE
     -> shell command
     -> "python src/zowie.py %(test-body-file)"
 
+    -> Functionality "Interpret ZOWIE Program" is implemented by
+    -> shell command
+    -> "./zowie-c %(test-body-file)"
+
 Display the Roman alphabet in reverse.
 
     | MOV R10, 90   ; initially it's "Z"
