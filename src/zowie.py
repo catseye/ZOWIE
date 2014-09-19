@@ -7,7 +7,6 @@
 #
 
 import sys
-import os
 
 
 def input():
@@ -381,39 +380,41 @@ def main(argv):
         p.run()
 
 
-def rpython_input():
-    s = os.read(1, 1)
-    if not s:
-        return 0
-    return ord(s[0])
-
-
-def rpython_output(code):
-    os.write(0, unichr(code).encode('utf-8'))
-
-
-def rpython_load(filename):
-    fd = os.open(filename, os.O_RDONLY, 0644)
-    text = ''
-    chunk = os.read(fd, 1024)
-    text += chunk
-    while len(chunk) == 1024:
-        chunk = os.read(fd, 1024)
-        text += chunk
-    os.close(fd)
-    return text
-
-
-def rpython_main(argv):
-    p = Processor()
-    program = rpython_load(argv[1])
-    p.load_string(program)
-    p.run()
-    return 0
-
-
 def target(*args):
     global input, output
+
+    import os
+
+    def rpython_input():
+        s = os.read(1, 1)
+        if not s:
+            return 0
+        return ord(s[0])
+    
+    
+    def rpython_output(code):
+        os.write(0, unichr(code).encode('utf-8'))
+    
+    
+    def rpython_load(filename):
+        fd = os.open(filename, os.O_RDONLY, 0644)
+        text = ''
+        chunk = os.read(fd, 1024)
+        text += chunk
+        while len(chunk) == 1024:
+            chunk = os.read(fd, 1024)
+            text += chunk
+        os.close(fd)
+        return text
+    
+    
+    def rpython_main(argv):
+        p = Processor()
+        program = rpython_load(argv[1])
+        p.load_string(program)
+        p.run()
+        return 0
+
     input = rpython_input
     output = rpython_output
     return rpython_main, None
