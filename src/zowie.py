@@ -3,6 +3,7 @@
 # zowie.py -- Interpreter for the ZOWIE language
 # Chris Pressey, Cat's Eye Technologies, Oct 6 2009
 # Adapted to run under Skulpt Oct 10 2013
+# Adapted to compile under RPython Sep 2014
 # This source code is in the public domain.
 #
 

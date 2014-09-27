@@ -1,6 +1,8 @@
 Tests for ZOWIE
 ===============
 
+This non-exhaustive test suite is written in format of Falderal 0.9.
+
     -> Tests for functionality "Interpret ZOWIE Program"
 
     -> Functionality "Interpret ZOWIE Program" is implemented by
