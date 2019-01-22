@@ -36,3 +36,9 @@ Version 1.1
     jaw-dropping way, the minor version number was bumped.
 *   Uses of regular expressions and old-style classes `zowie.py` were dropped.
 *   Added ability to compile `zowie.py` with RPython from PyPy version 2.3.1.
+
+Version 1.1 revision 2019.0122
+------------------------------
+
+*   Added example Javascript files demonstrating how zowie.py can be run
+    under Skulpt in a web browser.
