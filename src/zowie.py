@@ -22,9 +22,16 @@ def input():
     return x
 
 
+def unichr_compat(code):
+    try:
+        return unichr(code)
+    except NameError:
+        return chr(code)
+
+
 def output(code):
     try:
-        sys.stdout.write(unichr(code))
+        sys.stdout.write(unichr_compat(code))
     except UnicodeEncodeError:
         sys.stdout.write("&#%d;" % code)
 
@@ -43,7 +50,7 @@ if getattr(sys, 'resetTimeout', None) is not None:
         pass
 
     def skulpt_output(code):
-        print "&#%d;" % code
+        print("&#%d;" % code)
 
     output = skulpt_output
 
@@ -394,11 +401,11 @@ def target(*args):
     
     
     def rpython_output(code):
-        os.write(0, unichr(code).encode('utf-8'))
+        os.write(0, unichr_compat(code).encode('utf-8'))
     
     
     def rpython_load(filename):
-        fd = os.open(filename, os.O_RDONLY, 0644)
+        fd = os.open(filename, os.O_RDONLY, 0o644)
         text = ''
         chunk = os.read(fd, 1024)
         text += chunk

@@ -1,11 +1,11 @@
 #!/bin/sh
 
-FIXTURES=''
+APPLIANCES="tests/appliances/zowie.py2.md tests/appliances/zowie.py3.md"
 if [ ! `which rpython`X = X ]; then
-    FIXTURES="$FIXTURES tests/rpython-fixture.markdown"
+    APPLIANCES="$APPLIANCES tests/appliances/zowie-c.md"
     if [ ! -e ./zowie-c ]; then
         ./build.sh || exit $?
     fi
 fi
 
-falderal --substring-error $FIXTURES tests/ZOWIE.markdown
+falderal $APPLIANCES tests/ZOWIE.md
