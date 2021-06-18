@@ -1,0 +1,3 @@
+    -> Functionality "Interpret ZOWIE Program" is implemented by
+    -> shell command
+    -> "python3 src/zowie.py %(test-body-file)"
