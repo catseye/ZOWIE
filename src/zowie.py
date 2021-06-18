@@ -398,12 +398,15 @@ def target(*args):
         if not s:
             return 0
         return ord(s[0])
-    
-    
+
+
     def rpython_output(code):
-        os.write(0, unichr_compat(code).encode('utf-8'))
-    
-    
+        if code <= 127:
+            os.write(0, chr(code))
+        else:
+            os.write(0, "&#%d;" % code)
+
+
     def rpython_load(filename):
         fd = os.open(filename, os.O_RDONLY, 0o644)
         text = ''
@@ -414,8 +417,8 @@ def target(*args):
             text += chunk
         os.close(fd)
         return text
-    
-    
+
+
     def rpython_main(argv):
         p = Processor()
         program = rpython_load(argv[1])

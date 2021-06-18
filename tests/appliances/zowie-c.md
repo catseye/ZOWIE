@@ -10,5 +10,5 @@ very well.  Specifically, they dump core.  It is for this very reason that
 
     -> Functionality "Interpret ZOWIE Program" is implemented by
     -> shell command
-    -> "fa-under-pty ./zowie-c %(test-body-file)"
+    -> "fa-under-pty ./bin/zowie-c %(test-body-file)"
 
