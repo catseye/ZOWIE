@@ -4,6 +4,7 @@
 # Chris Pressey, Cat's Eye Technologies, Oct 6 2009
 # Adapted to run under Skulpt Oct 10 2013
 # Adapted to compile under RPython Sep 2014
+# Adapted to run under both Python 2 and 3 Jun 22 2021
 # This source code is in the public domain.
 #
 
