@@ -4,6 +4,7 @@
 # Chris Pressey, Cat's Eye Technologies, Oct 6 2009
 # Adapted to run under Skulpt Oct 10 2013
 # Adapted to compile under RPython Sep 2014
+# Adapted to run under both Python 2 and 3 Jun 22 2021
 # This source code is in the public domain.
 #
 
@@ -22,9 +23,16 @@ def input():
     return x
 
 
+def unichr_compat(code):
+    try:
+        return unichr(code)
+    except NameError:
+        return chr(code)
+
+
 def output(code):
     try:
-        sys.stdout.write(unichr(code))
+        sys.stdout.write(unichr_compat(code))
     except UnicodeEncodeError:
         sys.stdout.write("&#%d;" % code)
 
@@ -43,7 +51,7 @@ if getattr(sys, 'resetTimeout', None) is not None:
         pass
 
     def skulpt_output(code):
-        print "&#%d;" % code
+        print("&#%d;" % code)
 
     output = skulpt_output
 
@@ -391,14 +399,17 @@ def target(*args):
         if not s:
             return 0
         return ord(s[0])
-    
-    
+
+
     def rpython_output(code):
-        os.write(0, unichr(code).encode('utf-8'))
-    
-    
+        if code <= 127:
+            os.write(0, chr(code))
+        else:
+            os.write(0, "&#%d;" % code)
+
+
     def rpython_load(filename):
-        fd = os.open(filename, os.O_RDONLY, 0644)
+        fd = os.open(filename, os.O_RDONLY, 0o644)
         text = ''
         chunk = os.read(fd, 1024)
         text += chunk
@@ -407,8 +418,8 @@ def target(*args):
             text += chunk
         os.close(fd)
         return text
-    
-    
+
+
     def rpython_main(argv):
         p = Processor()
         program = rpython_load(argv[1])

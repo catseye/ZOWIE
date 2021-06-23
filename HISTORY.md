@@ -42,3 +42,14 @@ Version 1.1 revision 2019.0122
 
 *   Added example Javascript files demonstrating how zowie.py can be run
     under Skulpt in a web browser.
+
+Version 1.1 revision 2021.0622
+------------------------------
+
+*   Updated reference implementation to be able to run under either Python 2
+    or Python 3.
+*   Allowed reference implementation to be compiled by the RPython compiler
+    from PyPy version 7.3.5.  Note that the RPython-compiled version cannot
+    currently output Unicode, and always falls back to the `&#...;` syntax
+    when outputting non-ASCII characters.
+*   More idiomatic structuring of the Falderal test files.
