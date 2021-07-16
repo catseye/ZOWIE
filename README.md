@@ -184,7 +184,7 @@ in R8 is written into R8. Reading from R6 always offers the value 6.
 `R7`
 
 When a value is written into R7, the boolean negation of that value is
-written into R7: 1 if the value was 0, and 0 otherwise. Reading from R7
+written into R8: 1 if the value was 0, and 0 otherwise. Reading from R7
 always offers the value 7.
 
 `R8`
