@@ -10,6 +10,18 @@ type Memory = Map.Map Addr Value
 readMem mem addr = Map.findWithDefault 0 addr mem
 writeMem mem addr value = Map.insert addr value mem
 
+data Instruction = Immediate Addr Value
+                 | Direct Addr Addr
+                 | Indirect Addr Addr Value
+    deriving (Show, Ord, Eq)
+
+data State = State {
+    pc :: Addr,
+    mem :: Memory,
+    prog :: [Instruction],
+    saved :: Maybe State
+} deriving (Show, Ord, Eq)
+
 data Register = TtyRegister
               | BeginTransactionRegister
               | CommitRegister
@@ -19,13 +31,6 @@ data Register = TtyRegister
               | MultiplicationRegister
               | NegationRegister
               | RegularRegister Addr
-
-type CPU = Integer
-
-data State = State {
-    cpu :: CPU,
-    mem :: Memory
-} deriving (Show, Ord, Eq)
 
 
 mapRegister 0 = TtyRegister
@@ -38,8 +43,9 @@ mapRegister 6 = MultiplicationRegister
 mapRegister 7 = NegationRegister
 mapRegister x = RegularRegister x
 
+
 readAddr :: State -> Addr -> IO Value
-readAddr state@State{ cpu=cpu, mem=mem } addr =
+readAddr state@State{ mem=mem } addr =
     case mapRegister addr of
         TtyRegister -> do
             i <- readLn
@@ -53,18 +59,19 @@ readAddr state@State{ cpu=cpu, mem=mem } addr =
         NegationRegister         -> return 7
         RegularRegister x        -> return (readMem mem x)
 
+
 writeAddr :: State -> Addr -> Value -> IO State
-writeAddr state@State{ cpu=cpu, mem=mem } addr payload =
+writeAddr state@State{ mem=mem } addr payload =
     case mapRegister addr of
         TtyRegister -> do
             print payload
             return state
         BeginTransactionRegister ->
-            return state{ cpu=(beginTransaction cpu) }
+            return $ beginTransaction state
         CommitRegister ->
-            return state{ cpu=(if payload > 0 then commit cpu else rollback cpu) }
+            return $ if payload > 0 then commit state else rollback state
         CommitAndRepeatRegister ->
-            return state{ cpu=(if payload > 0 then commitAndRepeat cpu else commit cpu) }
+            return $ if payload > 0 then commitAndRepeat state else commit state
         AdditionRegister ->
             return state{ mem=(writeMem mem 8 ((readMem mem 8) + payload)) }
         SubtractionRegister ->
@@ -77,10 +84,21 @@ writeAddr state@State{ cpu=cpu, mem=mem } addr payload =
             return state{ mem=(writeMem mem x payload) }
 
 
-beginTransaction x = x
+beginTransaction :: State -> State
+beginTransaction state@State{} =
+    state{ saved=(Just state) }
 
-commit x = x
 
-commitAndRepeat x = x
+rollback :: State -> State
+rollback state@State{ pc=pc, saved=(Just previous) } =
+    previous{ pc=pc }
 
-rollback x = x
+
+commit :: State -> State
+commit state@State{ saved=(Just previous) } =
+    state{ saved=(saved previous) }
+
+
+commitAndRepeat :: State -> State
+commitAndRepeat state@State{ saved=(Just previous) } =
+    state{ pc=((pc previous) - 1) }
