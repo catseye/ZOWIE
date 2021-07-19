@@ -24,4 +24,38 @@ setValue state (Indirect addr) value = do
     state' <- writeAddr state addr' value
     return state'
 
-run s = s
+applyInstr :: State -> Instruction -> IO State
+applyInstr state (Mov dest src) = do
+    value <- getValue state src
+    state' <- setValue state dest value
+    return state'
+
+nth :: [a] -> Integer -> Maybe a
+nth [] _ = Nothing
+nth (x:xs) 0 = Just x
+nth (x:xs) n = nth xs (n-1)
+
+step :: State -> IO (Maybe State)
+step state@State{ pc=pc, prog=prog } =
+    case nth prog pc of
+        Just instr -> do
+            state' <- applyInstr state instr
+            return $ Just state'{ pc=pc+1 }
+        Nothing ->
+            return Nothing
+
+run :: State -> IO State
+run state = do
+    result <- step state
+    case result of
+        Just state' ->
+            run state'
+        Nothing ->
+            return state
+
+loadAndRun s =
+    let
+        prog = [Mov (Direct 0) (Immediate 0)]  -- TODO parse s
+        state = initState prog
+    in
+        run state

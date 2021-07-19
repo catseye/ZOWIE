@@ -12,7 +12,8 @@ main = do
     case args of
         ["run", fileName] -> do
             text <- readFile fileName
-            putStrLn $ show $ reverse $ Machine.run text
+            result <- Machine.loadAndRun text
+            putStrLn $ show $ result
             return ()
         _ -> do
             abortWith "Usage: zowie run <carriage-program-text-filename>"

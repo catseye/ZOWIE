@@ -24,9 +24,17 @@ data State = State {
 } deriving (Show, Ord, Eq)
 
 
+initState :: [Instruction] -> State
+initState prog =
+    State{
+        pc=0,
+        mem=Map.empty,
+        prog=prog,
+        saved=Nothing
+    }
+
 readMem mem addr = Map.findWithDefault 0 addr mem
 writeMem mem addr value = Map.insert addr value mem
-
 
 beginTransaction :: State -> State
 beginTransaction state@State{} =
