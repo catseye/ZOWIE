@@ -4,7 +4,7 @@ import System.Environment
 import System.Exit
 import System.IO
 
-import Language.ZOWIE
+import qualified Language.ZOWIE.Machine as Machine
 
 
 main = do
@@ -12,7 +12,7 @@ main = do
     case args of
         ["run", fileName] -> do
             text <- readFile fileName
-            putStrLn $ show $ reverse $ run text
+            putStrLn $ show $ reverse $ Machine.run text
             return ()
         _ -> do
             abortWith "Usage: zowie run <carriage-program-text-filename>"

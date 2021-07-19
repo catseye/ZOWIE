@@ -1,26 +1,6 @@
-module Language.ZOWIE where
+module Language.ZOWIE.Registers where
 
-import qualified Data.Map.Strict as Map
-
-
-type Addr = Integer
-type Value = Integer
-type Memory = Map.Map Addr Value
-
-readMem mem addr = Map.findWithDefault 0 addr mem
-writeMem mem addr value = Map.insert addr value mem
-
-data Instruction = Immediate Addr Value
-                 | Direct Addr Addr
-                 | Indirect Addr Addr Value
-    deriving (Show, Ord, Eq)
-
-data State = State {
-    pc :: Addr,
-    mem :: Memory,
-    prog :: [Instruction],
-    saved :: Maybe State
-} deriving (Show, Ord, Eq)
+import Language.ZOWIE.State
 
 data Register = TtyRegister
               | BeginTransactionRegister
@@ -43,7 +23,6 @@ mapRegister 6 = MultiplicationRegister
 mapRegister 7 = NegationRegister
 mapRegister x = RegularRegister x
 
-
 readAddr :: State -> Addr -> IO Value
 readAddr state@State{ mem=mem } addr =
     case mapRegister addr of
@@ -58,7 +37,6 @@ readAddr state@State{ mem=mem } addr =
         MultiplicationRegister   -> return 6
         NegationRegister         -> return 7
         RegularRegister x        -> return (readMem mem x)
-
 
 writeAddr :: State -> Addr -> Value -> IO State
 writeAddr state@State{ mem=mem } addr payload =
@@ -82,26 +60,3 @@ writeAddr state@State{ mem=mem } addr payload =
             return state{ mem=(writeMem mem 8 (if payload == 0 then 1 else 0)) }
         RegularRegister x ->
             return state{ mem=(writeMem mem x payload) }
-
-
-beginTransaction :: State -> State
-beginTransaction state@State{} =
-    state{ saved=(Just state) }
-
-
-rollback :: State -> State
-rollback state@State{ pc=pc, saved=(Just previous) } =
-    previous{ pc=pc }
-
-
-commit :: State -> State
-commit state@State{ saved=(Just previous) } =
-    state{ saved=(saved previous) }
-
-
-commitAndRepeat :: State -> State
-commitAndRepeat state@State{ saved=(Just previous) } =
-    state{ pc=((pc previous) - 1) }
-
-
-run s = s
