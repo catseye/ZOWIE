@@ -4,6 +4,7 @@ import System.Environment
 import System.Exit
 import System.IO
 
+import qualified Language.ZOWIE.Parser as Parser
 import qualified Language.ZOWIE.Machine as Machine
 
 
@@ -12,7 +13,8 @@ main = do
     case args of
         ["run", fileName] -> do
             text <- readFile fileName
-            result <- Machine.loadAndRun text
+            let prog = Parser.parseZOWIE text
+            result <- Machine.loadAndRun prog
             putStrLn $ show $ result
             return ()
         _ -> do

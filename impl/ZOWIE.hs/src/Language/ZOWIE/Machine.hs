@@ -53,9 +53,4 @@ run state = do
         Nothing ->
             return state
 
-loadAndRun s =
-    let
-        prog = [Mov (Direct 0) (Immediate 0)]  -- TODO parse s
-        state = initState prog
-    in
-        run state
+loadAndRun prog = run (initState prog)
