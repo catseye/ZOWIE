@@ -40,7 +40,7 @@ instrLine = do
 
 operand = do
     spaces
-    r <- indirect <|> direct <|> immediate
+    r <- (try indirect) <|> (try direct) <|> immediate
     return r
 
 indirect = do
@@ -56,7 +56,7 @@ direct = do
 
 immediate = do
     n <- number
-    return $ Direct n
+    return $ Immediate n
 
 number = do
     c <- digit

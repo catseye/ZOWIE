@@ -11,6 +11,11 @@ import qualified Language.ZOWIE.Machine as Machine
 main = do
     args <- getArgs
     case args of
+        ["parse", fileName] -> do
+            text <- readFile fileName
+            let prog = Parser.parseZOWIE text
+            putStrLn $ show $ prog
+            return ()
         ["run", fileName] -> do
             text <- readFile fileName
             let prog = Parser.parseZOWIE text
@@ -18,7 +23,7 @@ main = do
             putStrLn $ show $ result
             return ()
         _ -> do
-            abortWith "Usage: zowie run <carriage-program-text-filename>"
+            abortWith "Usage: zowie (parse|run) <zowie-program-filename>"
 
 abortWith msg = do
     hPutStrLn stderr msg
