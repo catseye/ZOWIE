@@ -20,7 +20,7 @@ main = do
             text <- readFile fileName
             let prog = Parser.parseZOWIE text
             result <- Machine.loadAndRun prog
-            putStrLn $ show $ result
+            -- putStrLn $ show $ result
             return ()
         _ -> do
             abortWith "Usage: zowie (parse|run) <zowie-program-filename>"
