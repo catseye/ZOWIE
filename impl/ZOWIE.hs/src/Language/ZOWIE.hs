@@ -102,3 +102,6 @@ commit state@State{ saved=(Just previous) } =
 commitAndRepeat :: State -> State
 commitAndRepeat state@State{ saved=(Just previous) } =
     state{ pc=((pc previous) - 1) }
+
+
+run s = s
