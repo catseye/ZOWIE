@@ -8,9 +8,12 @@ type Value = Integer
 
 type Memory = Map.Map Addr Value
 
-data Instruction = Immediate Addr Value
-                 | Direct Addr Addr
-                 | Indirect Addr Addr Value
+data Reference = Immediate Value
+               | Direct Addr
+               | Indirect Addr
+    deriving (Show, Ord, Eq)
+
+data Instruction = Mov Reference Reference
     deriving (Show, Ord, Eq)
 
 data State = State {
