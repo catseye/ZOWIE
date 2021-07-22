@@ -1,0 +1,3 @@
+    -> Functionality "Interpret ZOWIE Program" is implemented by
+    -> shell command
+    -> "./impl/ZOWIE.hs/bin/zowie run %(test-body-file)"

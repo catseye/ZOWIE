@@ -10,9 +10,12 @@ fi
 if [ -x bin/zowie-c ]; then
     APPLIANCES="$APPLIANCES tests/appliances/zowie-c.md"
 fi
+if [ -x impl/ZOWIE.hs/bin/zowie ]; then
+    APPLIANCES="$APPLIANCES tests/appliances/zowie-hs.md"
+fi
 
 if [ "x$APPLIANCES" = "x" ]; then
-    echo "No suitable Python versions or RPython-compiled executables found."
+    echo "No suitable Python versions or ZOWIE implementations found."
     exit 1
 fi
 
