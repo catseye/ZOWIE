@@ -3,7 +3,7 @@ module Language.ZOWIE.Parser where
 import Data.Maybe (catMaybes)
 import Text.ParserCombinators.Parsec
   (
-     many, string, satisfy, Parser, (<|>), digit, newline, optional, try, parse
+     many, many1, string, satisfy, Parser, (<|>), digit, newline, optional, try, parse
   )
 
 import Language.ZOWIE.State
@@ -22,9 +22,7 @@ splitLines (char:rest) line = splitLines rest (char:line)
 -- Comment ::= ";" anything.
 --
 
-zowie = many zowieLine
-
-zowieLine = (try commentLine) <|> instrLine
+zowie = many1 (commentLine <|> instrLine)
 
 comment = do
     spaces
