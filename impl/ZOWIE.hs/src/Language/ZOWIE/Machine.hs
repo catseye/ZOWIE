@@ -36,12 +36,11 @@ nth (x:xs) 0 = Just x
 nth (x:xs) n = nth xs (n-1)
 
 step :: State -> IO (Maybe State)
-step state@State{ pc=pc, prog=prog } =
-    case nth prog pc of
+step state =
+    case nth (prog state) (pc state) of
         Just instr -> do
-            --putStrLn ("@" ++ (show pc) ++ " " ++ (show instr))
             state' <- applyInstr state instr
-            return $ Just state'{ pc=pc+1 }
+            return $ Just state'{ pc=(pc state')+1 }
         Nothing ->
             return Nothing
 
