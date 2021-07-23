@@ -1,6 +1,10 @@
 module Language.ZOWIE.Parser where
 
+import Data.Maybe (catMaybes)
 import Text.ParserCombinators.Parsec
+  (
+     many, string, satisfy, Parser, (<|>), digit, newline, optional, try, parse
+  )
 
 import Language.ZOWIE.State
 
@@ -18,13 +22,19 @@ splitLines (char:rest) line = splitLines rest (char:line)
 -- Comment ::= ";" anything.
 --
 
-zowieLine = commentLine <|> instrLine
+zowie = many zowieLine
 
-commentLine :: Parser (Maybe Instruction)
-commentLine = do
+zowieLine = (try commentLine) <|> instrLine
+
+comment = do
     spaces
     string ";"
     many $ satisfy (\x -> x /= '\n')
+
+commentLine :: Parser (Maybe Instruction)
+commentLine = do
+    optional comment
+    newline
     return Nothing
 
 instrLine :: Parser (Maybe Instruction)
@@ -35,7 +45,8 @@ instrLine = do
     spaces
     string ","
     src <- operand
-    optional commentLine
+    optional comment
+    newline
     return $ Just $ Mov dest src
 
 operand = do
@@ -58,28 +69,21 @@ immediate = do
     n <- number
     return $ Immediate n
 
+-- ..................................................... --
+
 number = do
     c <- digit
     cs <- many digit
     num <- return (read (c:cs) :: Integer)
     return num
 
+spaces = many $ satisfy (\x -> x `elem` [' ', '\t'])
 
-parseLines [] = []
-parseLines (line:lines) =
-    case parse zowieLine "" line of
-        Left err ->
-            parseLines lines
-        Right result ->
-            case result of
-                Just instr ->
-                    (instr:parseLines lines)
-                Nothing ->
-                    parseLines lines
+-- ..................................................... --
 
 parseZOWIE text =
-    let
-        lines = splitLines text []
-        prog = parseLines lines
-    in
-        prog
+    case parse zowie "" (text ++ "\n") of
+        Left err ->
+            Left err
+        Right maybes ->
+            Right (catMaybes maybes)

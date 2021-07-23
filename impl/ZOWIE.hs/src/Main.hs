@@ -12,18 +12,24 @@ main = do
     args <- getArgs
     case args of
         ["parse", fileName] -> do
-            text <- readFile fileName
-            let prog = Parser.parseZOWIE text
+            prog <- loadSource fileName
             putStrLn $ show $ prog
             return ()
         ["run", fileName] -> do
-            text <- readFile fileName
-            let prog = Parser.parseZOWIE text
+            prog <- loadSource fileName
             result <- Machine.loadAndRun prog
             -- putStrLn $ show $ result
             return ()
         _ -> do
             abortWith "Usage: zowie (parse|run) <zowie-program-filename>"
+
+loadSource fileName = do
+    text <- readFile fileName
+    case Parser.parseZOWIE text of
+        Right prog -> do
+            return prog
+        Left error ->
+            abortWith $ show error
 
 abortWith msg = do
     hPutStrLn stderr msg
