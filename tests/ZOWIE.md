@@ -76,3 +76,42 @@ Store indirect reference.
     | MOV R[R12], 65
     | MOV R0, R11
     = A
+
+Commit a transaction.
+
+    | MOV R10, 65
+    | MOV R1, 1
+    | MOV R10, 66
+    | MOV R2, 1
+    | MOV R0, R10
+    = B
+
+Rollback a transaction.
+
+    | MOV R10, 65
+    | MOV R1, 1
+    | MOV R10, 66
+    | MOV R2, 0
+    | MOV R0, R10
+    = A
+
+Commit (but do not repeat) a transaction.
+
+    | MOV R10, 65
+    | MOV R1, 1
+    | MOV R10, 66
+    | MOV R3, 0
+    | MOV R0, R10
+    = B
+
+Commit and repeat a transaction.
+
+    | MOV R10, 65
+    | MOV R11, 1
+    | MOV R12, 0
+    | MOV R1, 1         ; begin the transaction
+    | MOV R17, R11
+    | MOV R11, R12
+    | MOV R3, R17       ; the first time, R17 will have 1; the second, 0
+    | MOV R0, R10
+    = A
