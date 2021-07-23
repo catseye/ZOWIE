@@ -224,7 +224,7 @@ class ImmediateReference(Reference):
         return self.value
 
     def __str__(self):
-        return str(self.number)
+        return str(self.value)
 
 
 class DirectRegisterReference(Reference):
@@ -238,7 +238,7 @@ class DirectRegisterReference(Reference):
         state.__setitem__(self.index, value)
 
     def __str__(self):
-        return "R%d" % self.number
+        return "R%d" % self.index
 
 
 class IndirectRegisterReference(Reference):
