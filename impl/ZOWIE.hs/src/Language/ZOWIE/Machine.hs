@@ -39,6 +39,7 @@ step :: State -> IO (Maybe State)
 step state@State{ pc=pc, prog=prog } =
     case nth prog pc of
         Just instr -> do
+            --putStrLn ("@" ++ (show pc) ++ " " ++ (show instr))
             state' <- applyInstr state instr
             return $ Just state'{ pc=pc+1 }
         Nothing ->
