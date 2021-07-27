@@ -1,6 +1,6 @@
 module Language.ZOWIE.State where
 
-import qualified Data.Map.Strict as Map
+import qualified Data.Map as Map
 
 
 type Addr = Integer
