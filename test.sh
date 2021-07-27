@@ -10,7 +10,7 @@ fi
 if [ -x bin/zowie-c ]; then
     APPLIANCES="$APPLIANCES tests/appliances/zowie-c.md"
 fi
-if [ -x impl/ZOWIE.hs/bin/zowie ]; then
+if [ -x impl/zowie-hs/bin/zowie-hs ]; then
     APPLIANCES="$APPLIANCES tests/appliances/zowie-hs.md"
 fi
 

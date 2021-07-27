@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROG=zowie
+PROG=zowie-hs
 
 if command -v ghc >/dev/null 2>&1; then
     echo "building $PROG.exe with ghc"
