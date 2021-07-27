@@ -20,8 +20,10 @@ data State = State {
     pc :: Addr,
     mem :: Memory,
     prog :: [Instruction],
-    saved :: Maybe State
-} deriving (Show, Ord, Eq)
+    saved :: Maybe State,
+    getCh :: IO Char,
+    putCh :: Char -> IO ()
+}
 
 
 initState :: [Instruction] -> State
@@ -30,7 +32,9 @@ initState prog =
         pc=0,
         mem=Map.empty,
         prog=prog,
-        saved=Nothing
+        saved=Nothing,
+        getCh=getChar,
+        putCh=putChar
     }
 
 readMem mem addr = Map.findWithDefault 0 addr mem

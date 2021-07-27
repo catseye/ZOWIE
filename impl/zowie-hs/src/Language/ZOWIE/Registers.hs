@@ -1,6 +1,6 @@
 module Language.ZOWIE.Registers where
 
-import Data.Char (chr)
+import Data.Char (chr, ord)
 
 import Language.ZOWIE.State
 
@@ -30,8 +30,8 @@ readAddr :: State -> Addr -> IO Value
 readAddr state@State{ mem=mem } addr =
     case mapRegister addr of
         TtyRegister -> do
-            i <- readLn
-            return i
+            i <- getCh state
+            return $ fromIntegral $ ord i
         BeginTransactionRegister -> return 1
         CommitRegister           -> return 2
         CommitAndRepeatRegister  -> return 3
@@ -45,7 +45,7 @@ writeAddr :: State -> Addr -> Value -> IO State
 writeAddr state@State{ mem=mem } addr payload =
     case mapRegister addr of
         TtyRegister -> do
-            putChar $ chr $ fromIntegral payload
+            putCh state $ chr $ fromIntegral payload
             return state
         BeginTransactionRegister ->
             return $ beginTransaction state

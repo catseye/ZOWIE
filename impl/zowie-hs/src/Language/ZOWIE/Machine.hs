@@ -54,3 +54,5 @@ run state = do
             return state
 
 loadAndRun prog = run (initState prog)
+
+loadAndRunWithIO getCh putCh prog = run (initState prog){ getCh=getCh, putCh=putCh }
