@@ -9,7 +9,7 @@ else
     echo "ghc not found, not building $PROG.exe"
 fi
 
-if command -v hastec-not-yet >/dev/null 2>&1; then
+if command -v hastec >/dev/null 2>&1; then
     echo "building $PROG.js with hastec"
     (cd src && hastec --make HasteMain.hs -o ../demo/$PROG.js) || exit 1
 else
