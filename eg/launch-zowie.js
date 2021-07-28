@@ -95,9 +95,9 @@ function launch(prefix, container, config) {
     }
   }
   for (var i = 0; i < examplePrograms.length; i++) {
-    presetManager.add(examplePrograms[i][0], makeCallback(examplePrograms[i][1]));
+    presetManager.add(examplePrograms[i].filename, makeCallback(examplePrograms[i].contents));
   }
-  presetManager.select(examplePrograms[0][0]);
+  presetManager.select("chars.zow");
 
   document.getElementById("run").style.enabled = false;
   var zowie_interpreter;
