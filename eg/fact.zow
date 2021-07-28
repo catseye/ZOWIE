@@ -1,10 +1,10 @@
 ; Compute a factorial, in ZOWIE
 ; This example source is in the public domain.
 
-; Expected output is MODIFIER LETTER TRIANGULAR COLON (Unicode character 720).
+; Expected output is LATIN SMALL LETTER X (Unicode character 120).
 ; NOTE: this code is also able to properly compute 0! = 1.
 
-MOV R11, 6    ; let's find 6!
+MOV R11, 5    ; let's find 5!
 MOV R10, 1    ; accumulator
 
 MOV R8, R11   ; increase multiplicand
