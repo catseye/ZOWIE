@@ -28,6 +28,6 @@ driver [progElem, resultElem, runButtonElem] =
         case Parser.parseZOWIE text of
             Right prog -> do
                 Machine.loadAndRunWithIO (getCh) (putCh) prog
-                setProp resultElem "textContent" $ "ok"
+                return ()
             Left error ->
                 setProp resultElem "textContent" $ show error
