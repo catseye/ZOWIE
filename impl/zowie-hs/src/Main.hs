@@ -17,11 +17,10 @@ main = do
             return ()
         ["run", fileName] -> do
             prog <- loadSource fileName
-            result <- Machine.loadAndRun prog
-            -- putStrLn $ show $ result
+            Machine.loadAndRun prog
             return ()
         _ -> do
-            abortWith "Usage: zowie (parse|run) <zowie-program-filename>"
+            abortWith "Usage: zowie-hs (parse|run) <zowie-program-filename>"
 
 loadSource fileName = do
     text <- readFile fileName
@@ -33,4 +32,4 @@ loadSource fileName = do
 
 abortWith msg = do
     hPutStrLn stderr msg
-    exitWith (ExitFailure 1)
+    exitWith $ ExitFailure 1
