@@ -1,0 +1,5 @@
+*.exe
+*.hi
+*.o
+*.jsmod
+demo/zowie-hs.js
