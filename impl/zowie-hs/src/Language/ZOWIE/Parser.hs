@@ -9,11 +9,6 @@ import Text.ParserCombinators.Parsec
 import Language.ZOWIE.State
 
 
-splitLines :: String -> String -> [String]
-splitLines [] line = [reverse line]
-splitLines ('\n':rest) line = [reverse line] ++ (splitLines rest [])
-splitLines (char:rest) line = splitLines rest (char:line)
-
 --
 -- The grammar of a line is
 --
