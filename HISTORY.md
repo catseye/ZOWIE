@@ -53,3 +53,12 @@ Version 1.1 revision 2021.0622
     currently output Unicode, and always falls back to the `&#...;` syntax
     when outputting non-ASCII characters.
 *   More idiomatic structuring of the Falderal test files.
+
+Version 1.1 revision 2021.0729
+------------------------------
+
+*   Fixed typo in spec spotted by [Sgeo](https://github.com/Sgeo).
+*   Added an implementation in Haskell.
+*   Added a few more tests cases to test suite.
+*   Fixed some bugs in __str__ methods in the Python implementation (that are not normally used).
+*   Fixed and modernized HTML5 installation.
