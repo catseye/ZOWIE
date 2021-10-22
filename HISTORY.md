@@ -60,5 +60,11 @@ Version 1.1 revision 2021.0729
 *   Fixed typo in spec spotted by [Sgeo](https://github.com/Sgeo).
 *   Added an implementation in Haskell.
 *   Added a few more tests cases to test suite.
-*   Fixed some bugs in __str__ methods in the Python implementation (that are not normally used).
+*   Fixed some bugs in `__str__` methods in the Python implementation (that are not normally used).
 *   Fixed and modernized HTML5 installation.
+
+Version 1.1 revision 2021.1022
+------------------------------
+
+*   Made zowie-hs buildable to JavaScript by containerized-hastec.
+*   Added belated history for ZOWIE 1.1 revision 2021.0729.
