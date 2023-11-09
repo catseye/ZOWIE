@@ -3,7 +3,7 @@ ZOWIE
 
 _Try it online_ [@ catseye.tc](https://catseye.tc/installation/ZOWIE)
 | _Wiki entry_ [@ esolangs.org](https://esolangs.org/wiki/ZOWIE)
-| _See also:_ [SMITH](https://github.com/catseye/SMITH#readme)
+| _See also:_ [SMITH](https://codeberg.org/catseye/SMITH#smith)
 
 - - - -
 
